@@ -2,7 +2,7 @@ Package: bojstat
 Title: R Interface to the Bank of Japan Time-Series Data Search API
 Version: 0.1.0
 Authors@R: 
-    person("Kazuki", "Hosoda", email = "placeholder@example.com", role = c("aut", "cre"))
+    person("Kazuki", "Hosoda", email = "kazu.1215.sagittarius@gmail.com", role = c("aut", "cre"))
 Description: Provides functions to access the Bank of Japan (BOJ) Time-Series 
     Data Search API, which was launched on February 18, 2026. Users can retrieve 
     over 200,000 time-series statistical data in JSON or CSV format, including 
@@ -13,7 +13,7 @@ Description: Provides functions to access the Bank of Japan (BOJ) Time-Series
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 URL: https://github.com/kigasudayooo/bojstat
 BugReports: https://github.com/kigasudayooo/bojstat/issues
 Imports:

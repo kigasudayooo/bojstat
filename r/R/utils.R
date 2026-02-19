@@ -114,5 +114,5 @@ boj_parse_resultset <- function(resultset, lang = "jp") {
 }
 
 #' Null coalescing operator
-#' @keywords internal
+#' @noRd
 `%||%` <- function(x, y) if (!is.null(x)) x else y

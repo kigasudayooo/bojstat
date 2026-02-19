@@ -30,7 +30,4 @@
 #' @importFrom httr2 request req_url_query req_headers req_timeout req_retry req_perform resp_body_json
 #' @importFrom cli cli_abort
 #'
-#' @docType package
-#' @name bojstat-package
-#' @aliases bojstat
-NULL
+"_PACKAGE"
