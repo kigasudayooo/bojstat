@@ -1,6 +1,8 @@
 # bojstat
 
-**日本銀行 時系列統計データ検索サイト API** の非公式 Python クライアントです。
+**日本銀行 時系列統計データ検索サイト API** の非公式 Python クライアント
+
+[English](#english) | [PyPI](https://pypi.org/project/bojstat/) | [GitHub](https://github.com/kigasudayooo/bojstat)
 
 2026年2月18日に公開された [日銀統計API](https://www.boj.or.jp/statistics/outline/notice_2026/not260218a.htm) を使い、金利・為替・マネーストック・短観など200,000以上の時系列統計データをPythonから簡単に取得できます。
 
@@ -48,9 +50,9 @@ data = client.get_data(
     start="202501",
 )
 
-# pandas DataFrameに変換
-df = client.to_dataframe(data)
-print(df.head())
+# pandas / polars に変換
+df = client.to_pandas(data)
+df = client.to_polars(data)
 ```
 
 ## API リファレンス
@@ -140,7 +142,6 @@ meta = client.get_metadata(db="FM08")
 メタデータからキーワードで系列を検索します。
 
 ```python
-# 外為DB内で「ドル」を含む系列を検索
 results = client.search_series(db="FM08", keyword="ドル")
 ```
 
@@ -196,5 +197,211 @@ df = client.to_polars(data)
 - 詳細は [API機能利用マニュアル](https://www.stat-search.boj.or.jp/info/api_manual.pdf) および [留意点](https://www.stat-search.boj.or.jp/info/api_notice.pdf) を参照してください。
 
 ## ライセンス
+
+MIT License
+
+---
+
+<a id="english"></a>
+
+# bojstat (English)
+
+**Unofficial Python client for the Bank of Japan Time-Series Data Search API**
+
+[Japanese (日本語)](#bojstat) | [PyPI](https://pypi.org/project/bojstat/) | [GitHub](https://github.com/kigasudayooo/bojstat)
+
+Easily access over 200,000 time-series statistical data from the [BOJ Statistics API](https://www.boj.or.jp/statistics/outline/notice_2026/not260218a.htm) (launched February 18, 2026) — including interest rates, exchange rates, money stock, Tankan survey, and more.
+
+> **Note**: This package is not officially affiliated with or endorsed by the Bank of Japan.
+
+---
+
+## Installation
+
+```bash
+pip install bojstat
+
+# With pandas support
+pip install bojstat[pandas]
+
+# With polars support
+pip install bojstat[polars]
+
+# Both
+pip install bojstat[all]
+
+# From GitHub (development version)
+pip install "git+https://github.com/kigasudayooo/bojstat.git#subdirectory=python"
+```
+
+## Quick Start
+
+```python
+from bojstat import BOJStatClient
+
+client = BOJStatClient(lang="en")
+
+# List available databases
+print(client.list_databases())
+
+# Get metadata for the FX database (FM08)
+meta = client.get_metadata(db="FM08")
+for m in meta[:3]:
+    print(m["SERIES_CODE"], m.get("NAME_OF_TIME_SERIES"))
+
+# Fetch overnight call rate data
+data = client.get_data(
+    db="FM01",
+    codes=["STRDCLUCON", "STRDCLUCONH", "STRDCLUCONL"],
+    start="202501",
+)
+
+# Convert to pandas / polars
+df = client.to_pandas(data)
+df = client.to_polars(data)
+```
+
+## API Reference
+
+### `BOJStatClient(lang="jp", timeout=30, request_interval=1.0)`
+
+Initialize the client.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `lang` | str | `"jp"` | Output language (`"jp"` or `"en"`) |
+| `timeout` | int | `30` | Request timeout in seconds |
+| `request_interval` | float | `1.0` | Wait time between consecutive requests (seconds). High-frequency access may result in connection blocking |
+
+---
+
+### `get_data(db, codes, start=None, end=None, start_position=None)`
+
+**Code API**. Retrieve data by specifying series codes (max 250 per request).
+
+```python
+data = client.get_data(
+    db="CO",
+    codes=["TK99F1000601GCQ01000", "TK99F2000601GCQ01000"],
+    start="202401",  # Q1 2024
+    end="202504",    # Q4 2025
+)
+```
+
+**Date format for start/end**
+
+| Frequency | Format | Example |
+|---|---|---|
+| Monthly / Weekly / Daily | `YYYYMM` | `"202501"` = Jan 2025 |
+| Quarterly | `YYYYQQ` | `"202502"` = Q2 2025 |
+| Half-yearly | `YYYYHH` | `"202501"` = 1st half 2025 |
+| Annual | `YYYY` | `"2025"` |
+
+---
+
+### `get_data_all(db, codes, start=None, end=None)`
+
+Automatically paginates to fetch all data when codes exceed 250.
+
+```python
+all_data = client.get_data_all(db="PR01", codes=my_500_codes)
+```
+
+---
+
+### `get_layer(db, frequency, layer, start=None, end=None, start_position=None)`
+
+**Layer API**. Retrieve data by hierarchical structure.
+
+```python
+data = client.get_layer(
+    db="BP01",
+    frequency="M",
+    layer="1,1,1",
+    start="202504",
+    end="202509",
+)
+```
+
+Layer wildcard examples:
+
+| Specification | Meaning |
+|---|---|
+| `"*"` | All series |
+| `"1,1"` | Layer1=1, Layer2=1 |
+| `"1,*,1"` | Layer1=1, Layer2=any, Layer3=1 |
+
+---
+
+### `get_metadata(db)`
+
+**Metadata API**. Retrieve series codes, names, collection periods, etc.
+
+```python
+meta = client.get_metadata(db="FM08")
+```
+
+---
+
+### `search_series(db, keyword=None)`
+
+Search series by keyword in metadata.
+
+```python
+results = client.search_series(db="FM08", keyword="dollar")
+```
+
+---
+
+### `to_pandas(data)`
+
+Convert `get_data()` / `get_layer()` results to a pandas DataFrame.
+
+```python
+df = client.to_pandas(data)
+# Index: dates, Columns: series codes
+```
+
+---
+
+### `to_polars(data)`
+
+Convert `get_data()` / `get_layer()` results to a polars DataFrame.
+
+```python
+df = client.to_polars(data)
+# Columns: date + series codes
+```
+
+> `to_dataframe()` is kept as an alias for `to_pandas()`.
+
+---
+
+## Available Databases
+
+| DB | Description |
+|---|---|
+| IR01 | Basic discount/loan rates |
+| FM01 | Overnight call rate (daily) |
+| FM08 | Foreign exchange rates |
+| FM09 | Effective exchange rates |
+| MD01 | Monetary base |
+| MD02 | Money stock |
+| CO | Tankan (Short-Term Economic Survey) |
+| PR01 | Corporate Goods Price Index |
+| BP01 | Balance of Payments |
+| FF | Flow of Funds |
+| ... | (Full list: `client.list_databases()`) |
+
+---
+
+## Important Notes
+
+- High-frequency access may result in connection blocking. Set `request_interval` (default: 1 second) appropriately.
+- Per-request limits: 250 series, 60,000 data points.
+- Do **not** include the DB prefix in series codes (use `MADR1Z@D`, not `IR01'MADR1Z@D`).
+- See the [API Manual](https://www.stat-search.boj.or.jp/info/api_manual.pdf) and [Usage Notes](https://www.stat-search.boj.or.jp/info/api_notice.pdf) for details.
+
+## License
 
 MIT License
