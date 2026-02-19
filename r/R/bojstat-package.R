@@ -6,16 +6,16 @@
 #' Tankan survey results, price indices, and more.
 #'
 #' @section Main functions:
-#' - [boj_get_data()] — Code API: retrieve data by series codes
-#' - [boj_get_data_all()] — Code API with automatic pagination
-#' - [boj_get_layer()] — Layer API: retrieve data by hierarchical structure
-#' - [boj_get_metadata()] — Metadata API: retrieve series metadata
-#' - [boj_search_series()] — Search series by keyword
-#' - [boj_list_databases()] — List all available databases
+#' - [boj_get_data()] -- Code API: retrieve data by series codes
+#' - [boj_get_data_all()] -- Code API with automatic pagination
+#' - [boj_get_layer()] -- Layer API: retrieve data by hierarchical structure
+#' - [boj_get_metadata()] -- Metadata API: retrieve series metadata
+#' - [boj_search_series()] -- Search series by keyword
+#' - [boj_list_databases()] -- List all available databases
 #'
 #' @section Reference data:
-#' - [boj_db_names] — Named vector of all database codes and descriptions
-#' - [boj_frequencies] — Named vector of frequency codes
+#' - [boj_db_names] -- Named vector of all database codes and descriptions
+#' - [boj_frequencies] -- Named vector of frequency codes
 #'
 #' @note This package is not officially affiliated with or endorsed by
 #'   the Bank of Japan. Please avoid high-frequency access to the API,

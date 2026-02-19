@@ -10,6 +10,7 @@ Description: Provides functions to access the Bank of Japan (BOJ) Time-Series
     indices, and more. The package supports the three API types provided by BOJ: 
     the Code API (retrieve data by series code), the Layer API (retrieve data by 
     hierarchical structure), and the Metadata API (retrieve series metadata).
+Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

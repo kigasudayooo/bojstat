@@ -17,7 +17,7 @@ boj_get_metadata(db, lang = c("jp", "en"), request_interval = 1, timeout = 30)
 }
 \value{
 A \code{data.frame} with columns: \code{series_code}, \code{name}, \code{unit},
-\code{frequency}, \code{category}, \code{layer1}–\code{layer5},
+\code{frequency}, \code{category}, \code{layer1}--\code{layer5},
 \code{start_of_series}, \code{end_of_series}, \code{last_update}, \code{notes}.
 }
 \description{
@@ -32,8 +32,9 @@ Useful for discovering available series codes before calling
 meta <- boj_get_metadata("FM08")
 head(meta)
 
-# Find series containing "ドル"
-meta[grepl("ドル", meta$name), ]
+# Find USD-related series (English)
+meta_en <- boj_get_metadata("FM08", lang = "en")
+meta_en[grepl("dollar", meta_en$name, ignore.case = TRUE), ]
 }
 
 }

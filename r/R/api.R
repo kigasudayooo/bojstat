@@ -162,9 +162,9 @@ boj_get_data_all <- function(
 #'   `"FH"`, `"Q"`, `"M"`, `"W"`, or `"D"`. See [boj_frequencies].
 #' @param layer Character. Layer specification as a comma-separated string
 #'   for layer 1 to 5. Wildcard `"*"` can be used. Examples:
-#'   - `"*"` — all series
-#'   - `"1,1"` — layer1 = 1, layer2 = 1
-#'   - `"1,*,1"` — layer1 = 1, layer2 = any, layer3 = 1
+#'   - `"*"` -- all series
+#'   - `"1,1"` -- layer1 = 1, layer2 = 1
+#'   - `"1,*,1"` -- layer1 = 1, layer2 = any, layer3 = 1
 #' @param start Character. Start period (see [boj_get_data()] for formats).
 #' @param end Character. End period.
 #' @param lang Character. `"jp"` or `"en"`.
@@ -233,7 +233,7 @@ boj_get_layer <- function(
 #' @param timeout Numeric. Request timeout in seconds.
 #'
 #' @return A `data.frame` with columns: `series_code`, `name`, `unit`,
-#'   `frequency`, `category`, `layer1`–`layer5`,
+#'   `frequency`, `category`, `layer1`--`layer5`,
 #'   `start_of_series`, `end_of_series`, `last_update`, `notes`.
 #'
 #' @examples
@@ -242,8 +242,9 @@ boj_get_layer <- function(
 #' meta <- boj_get_metadata("FM08")
 #' head(meta)
 #'
-#' # Find series containing "ドル"
-#' meta[grepl("ドル", meta$name), ]
+#' # Find USD-related series (English)
+#' meta_en <- boj_get_metadata("FM08", lang = "en")
+#' meta_en[grepl("dollar", meta_en$name, ignore.case = TRUE), ]
 #' }
 #'
 #' @export
@@ -311,9 +312,6 @@ boj_get_metadata <- function(
 #' @examples
 #' \dontrun{
 #' # Search for USD-related series in the FX database
-#' boj_search_series("FM08", keyword = "ドル")
-#'
-#' # English
 #' boj_search_series("FM08", keyword = "dollar", lang = "en")
 #' }
 #'

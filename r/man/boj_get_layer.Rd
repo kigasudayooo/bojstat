@@ -25,9 +25,9 @@ boj_get_layer(
 \item{layer}{Character. Layer specification as a comma-separated string
 for layer 1 to 5. Wildcard \code{"*"} can be used. Examples:
 \itemize{
-\item \code{"*"} — all series
-\item \code{"1,1"} — layer1 = 1, layer2 = 1
-\item \code{"1,*,1"} — layer1 = 1, layer2 = any, layer3 = 1
+\item \code{"*"} -- all series
+\item \code{"1,1"} -- layer1 = 1, layer2 = 1
+\item \code{"1,*,1"} -- layer1 = 1, layer2 = any, layer3 = 1
 }}
 
 \item{start}{Character. Start period (see \code{\link[=boj_get_data]{boj_get_data()}} for formats).}

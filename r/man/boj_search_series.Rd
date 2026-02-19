@@ -26,9 +26,6 @@ the specified keyword.
 \examples{
 \dontrun{
 # Search for USD-related series in the FX database
-boj_search_series("FM08", keyword = "ドル")
-
-# English
 boj_search_series("FM08", keyword = "dollar", lang = "en")
 }
 

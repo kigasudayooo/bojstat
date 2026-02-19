@@ -20,20 +20,20 @@ Use the \code{request_interval} parameter (default: 1 second) appropriately.
 \section{Main functions}{
 
 \itemize{
-\item \code{\link[=boj_get_data]{boj_get_data()}} — Code API: retrieve data by series codes
-\item \code{\link[=boj_get_data_all]{boj_get_data_all()}} — Code API with automatic pagination
-\item \code{\link[=boj_get_layer]{boj_get_layer()}} — Layer API: retrieve data by hierarchical structure
-\item \code{\link[=boj_get_metadata]{boj_get_metadata()}} — Metadata API: retrieve series metadata
-\item \code{\link[=boj_search_series]{boj_search_series()}} — Search series by keyword
-\item \code{\link[=boj_list_databases]{boj_list_databases()}} — List all available databases
+\item \code{\link[=boj_get_data]{boj_get_data()}} -- Code API: retrieve data by series codes
+\item \code{\link[=boj_get_data_all]{boj_get_data_all()}} -- Code API with automatic pagination
+\item \code{\link[=boj_get_layer]{boj_get_layer()}} -- Layer API: retrieve data by hierarchical structure
+\item \code{\link[=boj_get_metadata]{boj_get_metadata()}} -- Metadata API: retrieve series metadata
+\item \code{\link[=boj_search_series]{boj_search_series()}} -- Search series by keyword
+\item \code{\link[=boj_list_databases]{boj_list_databases()}} -- List all available databases
 }
 }
 
 \section{Reference data}{
 
 \itemize{
-\item \link{boj_db_names} — Named vector of all database codes and descriptions
-\item \link{boj_frequencies} — Named vector of frequency codes
+\item \link{boj_db_names} -- Named vector of all database codes and descriptions
+\item \link{boj_frequencies} -- Named vector of frequency codes
 }
 }
 
