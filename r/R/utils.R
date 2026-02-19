@@ -94,7 +94,9 @@ boj_parse_resultset <- function(resultset, lang = "jp") {
   rows <- lapply(resultset, function(s) {
     values_block <- s[["VALUES"]]
     dates  <- unlist(values_block[["SURVEY_DATES"]])
-    values <- unlist(values_block[["VALUES"]])
+    # Replace NULL with NA before unlisting (unlist drops NULLs)
+    raw_values <- values_block[["VALUES"]]
+    values <- vapply(raw_values, function(v) if (is.null(v)) NA_real_ else as.numeric(v), numeric(1))
 
     n <- length(dates)
     data.frame(
@@ -105,7 +107,7 @@ boj_parse_resultset <- function(resultset, lang = "jp") {
       category    = rep(s[[category_key]] %||% NA_character_, n),
       last_update = rep(as.character(s[["LAST_UPDATE"]] %||% NA), n),
       date        = dates,
-      value       = suppressWarnings(as.numeric(values)),
+      value       = values,
       stringsAsFactors = FALSE
     )
   })
