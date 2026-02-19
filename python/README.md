@@ -55,6 +55,71 @@ df = client.to_pandas(data)
 df = client.to_polars(data)
 ```
 
+## 使用例：短観 雇用人員判断DIの取得
+
+短観（DB名: `CO`）から雇用人員判断DIを取得し、pandas DataFrameに変換する実践的な例です。
+
+### ステップ1: 系列コードの検索
+
+短観には168,000以上の系列があります。`search_series()` でキーワード検索して絞り込みます。
+
+```python
+from bojstat import BOJStatClient
+
+client = BOJStatClient()
+
+results = client.search_series(db="CO", keyword="雇用人員")
+for m in results[:5]:
+    print(m["SERIES_CODE"], m["NAME_OF_TIME_SERIES_J"])
+```
+
+出力例：
+
+```
+TK99F0000608GCQ00000  D.I./雇用人員/全規模/全産業/実績
+TK99F0000608GCQ10000  D.I./雇用人員/全規模/全産業/予測
+TK99F1000608GCQ00000  D.I./雇用人員/全規模/製造業/実績
+TK99F1000608GCQ10000  D.I./雇用人員/全規模/製造業/予測
+TK99F2000608GCQ00000  D.I./雇用人員/全規模/非製造業/実績
+```
+
+### ステップ2: データ取得・DataFrame変換・CSV保存
+
+```python
+from bojstat import BOJStatClient
+
+client = BOJStatClient()
+
+# 系列コード
+codes = [
+    "TK99F0000608GCQ00000",  # 全規模/全産業/実績
+    "TK99F0000608GCQ10000",  # 全規模/全産業/予測
+    "TK99F1000608GCQ00000",  # 全規模/製造業/実績
+    "TK99F1000608GCQ10000",  # 全規模/製造業/予測
+    "TK99F2000608GCQ00000",  # 全規模/非製造業/実績
+    "TK99F2000608GCQ10000",  # 全規模/非製造業/予測
+]
+
+# データ取得（2020Q1〜）
+data = client.get_data(db="CO", codes=codes, start="202001")
+
+# DataFrame に変換してカラム名を整理
+df = client.to_pandas(data)
+rename = {}
+for series in data:
+    code = series["SERIES_CODE"]
+    name = series["NAME_OF_TIME_SERIES_J"]
+    short = name.replace("D.I./雇用人員/", "").replace("/実績", "(実績)").replace("/予測", "(予測)")
+    rename[code] = short
+df = df.rename(columns=rename)
+
+# CSV保存（Excel対応のBOM付きUTF-8）
+df.to_csv("tankan_employment_di.csv", encoding="utf-8-sig")
+print(df)
+```
+
+---
+
 ## API リファレンス
 
 ### `BOJStatClient(lang="jp", timeout=30, request_interval=1.0)`
@@ -260,6 +325,61 @@ data = client.get_data(
 df = client.to_pandas(data)
 df = client.to_polars(data)
 ```
+
+## Usage Example: Fetching Tankan Employment DI
+
+A practical example of retrieving the Tankan survey's Employment Conditions DI (DB: `CO`) and converting it to a pandas DataFrame.
+
+### Step 1: Search for Series Codes
+
+The Tankan database contains over 168,000 series. Use `search_series()` to narrow down.
+
+```python
+from bojstat import BOJStatClient
+
+client = BOJStatClient(lang="en")
+
+results = client.search_series(db="CO", keyword="employment")
+for m in results[:5]:
+    print(m["SERIES_CODE"], m["NAME_OF_TIME_SERIES"])
+```
+
+### Step 2: Fetch Data, Convert to DataFrame, and Save as CSV
+
+```python
+from bojstat import BOJStatClient
+
+client = BOJStatClient()
+
+# Series codes for Employment Conditions DI
+codes = [
+    "TK99F0000608GCQ00000",  # All sizes / All industries / Actual
+    "TK99F0000608GCQ10000",  # All sizes / All industries / Forecast
+    "TK99F1000608GCQ00000",  # All sizes / Manufacturing / Actual
+    "TK99F1000608GCQ10000",  # All sizes / Manufacturing / Forecast
+    "TK99F2000608GCQ00000",  # All sizes / Non-manufacturing / Actual
+    "TK99F2000608GCQ10000",  # All sizes / Non-manufacturing / Forecast
+]
+
+# Fetch data from Q1 2020
+data = client.get_data(db="CO", codes=codes, start="202001")
+
+# Convert to DataFrame and rename columns
+df = client.to_pandas(data)
+rename = {}
+for series in data:
+    code = series["SERIES_CODE"]
+    name = series["NAME_OF_TIME_SERIES_J"]
+    short = name.replace("D.I./雇用人員/", "").replace("/実績", "(Actual)").replace("/予測", "(Forecast)")
+    rename[code] = short
+df = df.rename(columns=rename)
+
+# Save as CSV (BOM-prefixed UTF-8 for Excel compatibility)
+df.to_csv("tankan_employment_di.csv", encoding="utf-8-sig")
+print(df)
+```
+
+---
 
 ## API Reference
 

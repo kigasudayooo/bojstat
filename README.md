@@ -4,7 +4,7 @@
 
 [English](#english) | [PyPI](https://pypi.org/project/bojstat/) | [GitHub](https://github.com/kigasudayooo/bojstat)
 
-2026年2月18日に公開された [日銀統計API](https://www.boj.or.jp/statistics/outline/notice_2026/not260218a.htm) を使い、金利・為替・マネーストック・短観・物価など **20万件以上の時系列統計データ** を取得できます。
+2026年2月18日に公開された [日銀統計API](https://www.boj.or.jp/statistics/outline/notice_2026/not260218a.htm) を使い、金利・為替・マネーストック・短観・物価などの時系列データを取得できます。
 
 > このパッケージは日本銀行が公式に提供・保証するものではありません。
 
@@ -116,6 +116,7 @@ df <- boj_get_data(
 - 系列コードにDB名プレフィックスを含めないこと（`MADR1Z@D` ✓、`IR01'MADR1Z@D` ✗）
 
 詳細は [APIマニュアル](https://www.stat-search.boj.or.jp/info/api_manual.pdf) を参照。
+[使用例](python/README.md)として、日銀短観の雇用人員判断DIの取得について記載しています。
 
 ---
 
