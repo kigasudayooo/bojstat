@@ -13,8 +13,14 @@
 ```bash
 pip install bojstat
 
-# pandas DataFrame に変換したい場合
+# pandas 対応
 pip install bojstat[pandas]
+
+# polars 対応
+pip install bojstat[polars]
+
+# 両方
+pip install bojstat[all]
 
 # GitHubから（開発版）
 pip install "git+https://github.com/kigasudayooo/bojstat.git#subdirectory=python"
@@ -140,14 +146,27 @@ results = client.search_series(db="FM08", keyword="ドル")
 
 ---
 
-### `to_dataframe(data)`
+### `to_pandas(data)`
 
-`get_data()` または `get_layer()` の結果を pandas DataFrame に変換します。
+`get_data()` / `get_layer()` の結果を pandas DataFrame に変換します。
 
 ```python
-df = client.to_dataframe(data)
+df = client.to_pandas(data)
 # インデックス: 日付、カラム: 系列コード
 ```
+
+---
+
+### `to_polars(data)`
+
+`get_data()` / `get_layer()` の結果を polars DataFrame に変換します。
+
+```python
+df = client.to_polars(data)
+# カラム: date + 各系列コード
+```
+
+> `to_dataframe()` は `to_pandas()` のエイリアスとして引き続き利用可能です。
 
 ---
 

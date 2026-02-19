@@ -24,8 +24,9 @@ bojstat/
 
 ```bash
 pip install bojstat
-# pandas対応版
+# pandas / polars 対応
 pip install bojstat[pandas]
+pip install bojstat[polars]
 
 # GitHubから（開発版）
 pip install "git+https://github.com/kigasudayooo/bojstat.git#subdirectory=python"
@@ -51,8 +52,9 @@ data = client.get_data(
     start="202501",
 )
 
-# pandas DataFrameへ変換
-df = client.to_dataframe(data)
+# pandas / polars に変換
+df = client.to_pandas(data)
+df = client.to_polars(data)
 ```
 
 詳細は [`python/README.md`](python/README.md) を参照。

@@ -85,7 +85,31 @@ class TestBOJStatClient:
         assert exc_info.value.status == 400
 
     @patch("bojstat.client.BOJStatClient._request")
-    def test_to_dataframe(self, mock_request):
+    def test_to_pandas(self, mock_request):
+        pytest.importorskip("pandas")
+        mock_request.return_value = {
+            "STATUS": 200,
+            "NEXTPOSITION": None,
+            "RESULTSET": [
+                {
+                    "SERIES_CODE": "CODE1",
+                    "VALUES": {
+                        "SURVEY_DATES": ["202501", "202502"],
+                        "VALUES": [1.0, 2.0],
+                    },
+                }
+            ],
+        }
+        client = BOJStatClient()
+        client._last_request_time = 0
+        data = client.get_data(db="FM01", codes=["CODE1"])
+        df = client.to_pandas(data)
+        assert "CODE1" in df.columns
+        assert len(df) == 2
+
+    @patch("bojstat.client.BOJStatClient._request")
+    def test_to_dataframe_alias(self, mock_request):
+        """to_dataframe は to_pandas のエイリアス"""
         pytest.importorskip("pandas")
         mock_request.return_value = {
             "STATUS": 200,
@@ -106,3 +130,48 @@ class TestBOJStatClient:
         df = client.to_dataframe(data)
         assert "CODE1" in df.columns
         assert len(df) == 2
+
+    @patch("bojstat.client.BOJStatClient._request")
+    def test_to_polars(self, mock_request):
+        pytest.importorskip("polars")
+        mock_request.return_value = {
+            "STATUS": 200,
+            "NEXTPOSITION": None,
+            "RESULTSET": [
+                {
+                    "SERIES_CODE": "CODE1",
+                    "VALUES": {
+                        "SURVEY_DATES": ["202501", "202502"],
+                        "VALUES": [1.0, 2.0],
+                    },
+                },
+                {
+                    "SERIES_CODE": "CODE2",
+                    "VALUES": {
+                        "SURVEY_DATES": ["202501", "202502"],
+                        "VALUES": [3.0, 4.0],
+                    },
+                },
+            ],
+        }
+        import polars as pl
+
+        client = BOJStatClient()
+        client._last_request_time = 0
+        data = client.get_data(db="FM01", codes=["CODE1", "CODE2"])
+        df = client.to_polars(data)
+        assert isinstance(df, pl.DataFrame)
+        assert "date" in df.columns
+        assert "CODE1" in df.columns
+        assert "CODE2" in df.columns
+        assert len(df) == 2
+        assert df["CODE1"].to_list() == [1.0, 2.0]
+
+    def test_to_polars_empty(self):
+        pytest.importorskip("polars")
+        import polars as pl
+
+        client = BOJStatClient()
+        df = client.to_polars([])
+        assert isinstance(df, pl.DataFrame)
+        assert len(df) == 0

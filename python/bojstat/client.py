@@ -339,7 +339,7 @@ class BOJStatClient:
         name_key = "NAME_OF_TIME_SERIES_J" if self.lang == "jp" else "NAME_OF_TIME_SERIES"
         return [m for m in meta if kw in str(m.get(name_key, "")).lower()]
 
-    def to_dataframe(self, data: list[dict]):
+    def to_pandas(self, data: list[dict]):
         """
         get_data / get_layer の結果を pandas DataFrame に変換する。
 
@@ -355,12 +355,12 @@ class BOJStatClient:
 
         Notes
         -----
-        pandas が必要です。pip install pandas でインストールしてください。
+        pandas が必要です。``pip install bojstat[pandas]`` でインストールしてください。
         """
         try:
             import pandas as pd
         except ImportError:
-            raise ImportError("pandasが必要です: pip install pandas")
+            raise ImportError("pandasが必要です: pip install bojstat[pandas]")
 
         frames = {}
         for series in data:
@@ -375,3 +375,59 @@ class BOJStatClient:
         if not frames:
             return pd.DataFrame()
         return pd.DataFrame(frames)
+
+    def to_polars(self, data: list[dict]):
+        """
+        get_data / get_layer の結果を polars DataFrame に変換する。
+
+        Parameters
+        ----------
+        data : list[dict]
+            get_data() または get_layer() の戻り値。
+
+        Returns
+        -------
+        polars.DataFrame
+            カラム: "date" + 各系列コード
+
+        Notes
+        -----
+        polars が必要です。``pip install bojstat[polars]`` でインストールしてください。
+        """
+        try:
+            import polars as pl
+        except ImportError:
+            raise ImportError("polarsが必要です: pip install bojstat[polars]")
+
+        all_dates: list[str] = []
+        series_map: dict[str, dict[str, float]] = {}
+
+        for series in data:
+            code = series.get("SERIES_CODE", "")
+            values_block = series.get("VALUES", {})
+            if not isinstance(values_block, dict):
+                continue
+            dates = values_block.get("SURVEY_DATES", [])
+            vals = values_block.get("VALUES", [])
+            date_val = dict(zip(dates, vals))
+            series_map[code] = date_val
+            all_dates.extend(dates)
+
+        if not series_map:
+            return pl.DataFrame()
+
+        unique_dates = sorted(set(all_dates))
+        columns: dict[str, list] = {"date": unique_dates}
+        for code, date_val in series_map.items():
+            columns[code] = [date_val.get(d) for d in unique_dates]
+
+        return pl.DataFrame(columns)
+
+    def to_dataframe(self, data: list[dict]):
+        """
+        get_data / get_layer の結果を pandas DataFrame に変換する。
+
+        .. deprecated::
+            :meth:`to_pandas` を使用してください。
+        """
+        return self.to_pandas(data)
