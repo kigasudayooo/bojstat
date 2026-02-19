@@ -1,0 +1,101 @@
+---
+title: "Getting Started with bojstat"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with bojstat}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  eval     = FALSE
+)
+```
+
+## Overview
+
+`bojstat` provides a simple R interface to the [BOJ Time-Series Data Search API](https://www.stat-search.boj.or.jp), launched on February 18, 2026.
+
+```{r}
+library(bojstat)
+```
+
+## Step 1: Find a database
+
+```{r}
+boj_list_databases()
+```
+
+## Step 2: Browse available series with Metadata API
+
+```{r}
+# Get metadata for the FX database (FM08)
+meta <- boj_get_metadata("FM08")
+head(meta[, c("series_code", "name", "frequency", "start_of_series")])
+
+# Search for USD-related series
+usd <- boj_search_series("FM08", keyword = "ドル")
+usd[, c("series_code", "name")]
+```
+
+## Step 3: Fetch data with Code API
+
+```{r}
+# Overnight call rate
+df <- boj_get_data(
+  db    = "FM01",
+  codes = c("STRDCLUCON", "STRDCLUCONH", "STRDCLUCONL"),
+  start = "202501"
+)
+head(df)
+```
+
+```{r}
+# Tankan (quarterly), English output
+df_en <- boj_get_data(
+  db    = "CO",
+  codes = c("TK99F1000601GCQ01000", "TK99F2000601GCQ01000"),
+  start = "202401",
+  end   = "202504",
+  lang  = "en"
+)
+```
+
+## Step 4: Fetch data with Layer API
+
+When you don't know series codes, use the Layer API to retrieve all series in a hierarchical category:
+
+```{r}
+# Balance of payments, monthly, layer 1-1-1
+df_bop <- boj_get_layer(
+  db        = "BP01",
+  frequency = "M",
+  layer     = "1,1,1",
+  start     = "202504",
+  end       = "202509"
+)
+head(df_bop)
+```
+
+## Plotting
+
+```{r}
+library(ggplot2)
+
+df <- boj_get_data("FM01", codes = "STRDCLUCON", start = "202001")
+df$date_parsed <- as.Date(paste0(df$date, "01"), "%Y%m%d")
+
+ggplot(df, aes(x = date_parsed, y = value)) +
+  geom_line() +
+  labs(title = "Overnight Call Rate", x = NULL, y = "%") +
+  theme_minimal()
+```
+
+## Important Notes
+
+- **Rate limiting**: The BOJ may block connections if requests are too frequent. The default `request_interval = 1.0` second is recommended.
+- **Series codes**: Do NOT include the DB prefix (use `"MADR1Z@D"`, not `"IR01'MADR1Z@D"`).
+- **Per-request limits**: max 250 series codes, max 60,000 data points. Use `boj_get_data_all()` for larger requests.
